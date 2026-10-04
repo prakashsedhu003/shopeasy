@@ -1,16 +1,12 @@
 const express = require("express");
-const  getConnection = require("../db");
+const pool = require("../db");
 
 const router = express.Router();
 
-// Get all products from Oracle
+// Get all products
 router.get("/products", async (req, res) => {
-    let connection;
-
     try {
-        connection = await getConnection();
-
-        const result = await connection.execute(`
+        const result = await pool.query(`
             SELECT
                 product_id,
                 name,
@@ -18,19 +14,21 @@ router.get("/products", async (req, res) => {
                 price,
                 image,
                 category,
-                stock
+                stock,
+                gender
             FROM products
             ORDER BY product_id
         `);
 
         const products = result.rows.map(row => ({
-            id: row[0],
-            name: row[1],
-            description: row[2],
-            price: row[3],
-            image: row[4],
-            category: row[5],
-            stock: row[6]
+            id: row.product_id,
+            name: row.name,
+            description: row.description,
+            price: row.price,
+            image: row.image,
+            category: row.category,
+            stock: row.stock,
+            gender: row.gender
         }));
 
         res.json(products);
@@ -41,22 +39,13 @@ router.get("/products", async (req, res) => {
         res.status(500).json({
             message: "Failed to load products"
         });
-
-    } finally {
-        if (connection) {
-            await connection.close();
-        }
     }
 });
 
-// Get one product from Oracle
+// Get one product
 router.get("/products/:id", async (req, res) => {
-    let connection;
-
     try {
-        connection = await getConnection();
-
-        const result = await connection.execute(
+        const result = await pool.query(
             `
             SELECT
                 product_id,
@@ -65,13 +54,12 @@ router.get("/products/:id", async (req, res) => {
                 price,
                 image,
                 category,
-                stock
+                stock,
+                gender
             FROM products
-            WHERE product_id = :id
+            WHERE product_id = $1
             `,
-            {
-                id: Number(req.params.id)
-            }
+            [Number(req.params.id)]
         );
 
         if (result.rows.length === 0) {
@@ -83,13 +71,14 @@ router.get("/products/:id", async (req, res) => {
         const row = result.rows[0];
 
         res.json({
-            id: row[0],
-            name: row[1],
-            description: row[2],
-            price: row[3],
-            image: row[4],
-            category: row[5],
-            stock: row[6]
+            id: row.product_id,
+            name: row.name,
+            description: row.description,
+            price: row.price,
+            image: row.image,
+            category: row.category,
+            stock: row.stock,
+            gender: row.gender
         });
 
     } catch (error) {
@@ -98,11 +87,6 @@ router.get("/products/:id", async (req, res) => {
         res.status(500).json({
             message: "Failed to load product"
         });
-
-    } finally {
-        if (connection) {
-            await connection.close();
-        }
     }
 });
 

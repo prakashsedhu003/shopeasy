@@ -1,13 +1,12 @@
 require("dotenv").config();
 
-const oracledb = require("oracledb");
+const { Pool } = require("pg");
 
-async function getConnection() {
-    return await oracledb.getConnection({
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        connectString: process.env.DB_CONNECTION_STRING
-    });
-}
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
-module.exports = getConnection;
+module.exports = pool;
