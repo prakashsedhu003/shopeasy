@@ -2,7 +2,7 @@
    app.js – shared helpers used by every page
    ============================================================ */
 
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = "https://shopeasy-xrjq.onrender.com/api";
 const CART_KEY = "shopeasy_cart";
 const USER_KEY = "shopeasy_user";
 const TOKEN_KEY = "shopeasy_token";
