@@ -10,7 +10,10 @@ const orderRoutes = require("./routes/orderRoutes");
 const app = express();
 
 app.use(cors({
-    origin: "http://127.0.0.1:5500"
+    origin: [
+        "http://127.0.0.1:5500",
+        "https://shopeasy-frontend-9gcg.onrender.com"
+    ]
 }));
 
 app.use(express.json());
